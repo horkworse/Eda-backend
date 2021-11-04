@@ -1,10 +1,11 @@
 const express = require("express");
 const log = require('simple-node-logger').createSimpleLogger();
-
+const mongoose = require("mongoose");
 const app = express();
 
 app.use((req, res, next) => {
     log.info("request ", req.url);
+    // req.query.token =
     return next();
 });
 
