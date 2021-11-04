@@ -1,0 +1,30 @@
+{
+  "name": "Eda-backend",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/horkworse/Eda-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/horkworse/Eda-backend/issues"
+  },
+  "homepage": "https://github.com/horkworse/Eda-backend#readme",
+  "dependencies": {
+    "config": "^3.3.6",
+    "express": "^4.17.1",
+    "mongodb": "^4.1.4",
+    "simple-node-logger": "^21.8.12"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}
