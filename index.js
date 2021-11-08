@@ -36,7 +36,7 @@ app.use((req, res, next) => {
     return next();
 });
 
-app.get("/user/:phone", (req, res) => {
+app.get("/user/", (req, res) => {
 
 });
 
@@ -45,15 +45,24 @@ app.get("/", (req, res) => {
 });
 
 app.get("/ingredient", (req, res) => {
-
+    ingredientModel.find({}, function(err, ingredients){
+        if(err) return console.log(err);
+        res.send(ingredients)
+    });
 });
 
 app.get("/dishType", (req, res) => {
-
+    dishTypeModel.find({}, function(err, types){
+        if(err) return console.log(err);
+        res.send(types)
+    });
 });
 
 app.get("/dish", (req, res) => {
-
+    dishModel.find({}, function(err, dishes){
+        if(err) return console.log(err);
+        res.send(dishes)
+    });
 });
 
 app.get("/orderedDish", (req, res) => {
@@ -65,11 +74,17 @@ app.get("/order", (req, res) => {
 });
 
 app.get("/card", (req, res) => {
-
+    cardModel.find({}, function(err, card){
+        if(err) return console.log(err);
+        res.send(card)
+    });
 });
 
 app.get("/distributionPoint", (req, res) => {
-
+    distributionPointModel.find({}, function(err, points){
+        if(err) return console.log(err);
+        res.send(points)
+    });
 });
 
 app.listen(3001);
