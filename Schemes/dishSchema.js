@@ -1,3 +1,4 @@
+const {Schema} = require("mongoose");
 const dishScheme = new Schema({
     id: Number,
     name: String,

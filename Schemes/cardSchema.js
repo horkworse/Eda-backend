@@ -1,3 +1,4 @@
+const {Schema} = require("mongoose");
 const cardScheme = new Schema({
     id: Number,
     number: String

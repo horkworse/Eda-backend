@@ -1,3 +1,4 @@
+const {Schema} = require("mongoose");
 const ingredientScheme = new Schema({
     id: Number,
     name: String,

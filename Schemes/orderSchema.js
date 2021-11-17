@@ -1,3 +1,4 @@
+const {Schema} = require("mongoose");
 const orderScheme = new Schema({
     id: Number,
     dishes: Array,
