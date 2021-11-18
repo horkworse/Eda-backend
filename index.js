@@ -30,12 +30,10 @@ const OrderStatus = mongoose.model(" orderStatus", orderStatusSchema);
 const connectionString = `mongodb+srv://${config.get("dbuser")}:${config.get("dbpassword")}@cluster0.phklg.mongodb.net/${config.get("dbname")}?retryWrites=true&w=majority`;
 mongoose.connect(connectionString, function (err) {
     if (err) console.log(err);
-    app.listen(3000, function () {
+    app.listen(3001, () => {
         console.log("Сервер ожидает подключения...");
     });
 });
-
-const userRouter = express.Router();
 
 app.use((req, res, next) => {
     log.info("request ", req.url);
@@ -60,7 +58,7 @@ dishRouter.get("/", (req, res) => {
 });
 
 dishRouter.get("/:id", (req, res) => {
-    Dish.findOne({_id: ObjectId(req.params.id)}, (err) => {
+    Dish.findOne({_id: ObjectId(req.params.id)}, (err, dish) => {
         if (err) {
             console.log(err);
             return res.sendStatus(400);
@@ -70,7 +68,7 @@ dishRouter.get("/:id", (req, res) => {
 });
 
 dishRouter.put("/edit", (req, res) => {
-    let newDish = {
+    let dish = {
         name: req.query.name,
         description: req.query.description,
         price: req.query.price,
@@ -79,12 +77,12 @@ dishRouter.put("/edit", (req, res) => {
         type: req.query.type
     };
 
-    Dish.findOneAndUpdate({_id: req.params.id}, newDish, (err) => {
+    Dish.findOneAndUpdate({_id: req.params.id}, dish, (err, newDish) => {
         if (err) {
             console.log(err);
             return res.sendStatus(400);
         }
-        res.send(200);
+        res.send(newDish.id);
     });
 });
 
@@ -98,12 +96,12 @@ dishRouter.post("/add", (req, res) => {
         type: req.body.type
     });
 
-    dish.save((err, dishes) => {
+    dish.save((err, newDish) => {
         if (err) {
             console.log(err);
             return res.sendStatus(400);
         }
-        res.sendStatus(200);
+        res.send(newDish.id);
     });
 });
 
@@ -142,30 +140,31 @@ dishTypeRouter.get("/:id", (req, res) => {
 });
 
 dishTypeRouter.put("/edit", (req, res) => {
-    let newDishType = {
+    let dishType = {
         name: req.query.name
     };
 
-    DishType.findOneAndUpdate({_id: req.params.id}, newDishType, (err) => {
+    DishType.findOneAndUpdate({_id: req.params.id}, dishType, (err, newDishType) => {
         if (err) {
             console.log(err);
             return res.sendStatus(400);
         }
-        res.send(200);
+        res.send(newDishType.id);
     })
 });
 
 dishTypeRouter.post("/add", (req, res) => {
     let dishType = new DishType({
-        name: req.body.name
+        name: req.body.name,
+        group: req.body.group
     });
 
-    dishType.save((err) => {
+    dishType.save((err, newDishType) => {
         if (err) {
             console.log(err);
             return res.sendStatus(400);
         }
-        res.sendStatus(200);
+        res.send(newDishType.id);
     });
 });
 
@@ -181,21 +180,9 @@ dishTypeRouter.delete("/delete/:id", (req, res) => {
 
 app.use("/dishType", dishTypeRouter);
 
-
-
-
-
-app.get("/user/", (req, res) => {
-
-});
-
-app.get("/", (req, res) => {
-    res.send("<h2>Ну привет, пидарюга (:</h2>");
-});
-
 const ingredientRouter = express.Router();
 
-app.get("/ingredient", (req, res) => {
+ingredientRouter.get("/", (req, res) => {
     Ingredient.find({}, (err, ingredients) => {
         if (err) {
             console.log(err);
@@ -203,6 +190,140 @@ app.get("/ingredient", (req, res) => {
         }
         res.send(ingredients);
     });
+});
+
+ingredientRouter.get("/:id", (req, res) => {
+    Ingredient.findOne({_id: ObjectId(req.params.id)}, (err, ingredient) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(ingredient);
+    });
+});
+
+ingredientRouter.put("/edit", (req, res) => {
+    let newIngredient = {
+        name: req.query.name,
+        description: req.query.description,
+        price: req.query.price,
+        image: req.query.image,
+        ingredient: req.query.ingredient,
+        type: req.query.type
+    };
+
+    Ingredient.findOneAndUpdate({_id: req.params.id}, newIngredient, (err, ingredient) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(ingredient.id);
+    });
+});
+
+ingredientRouter.post("/add", (req, res) => {
+    let ingredient = new Ingredient({
+        name: req.body.name,
+        price: req.body.price,
+        required: req.body.required,
+        additional: req.body.additional
+    });
+
+    ingredient.save((err, newIngredient) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(newIngredient.id);
+    });
+});
+
+ingredientRouter.delete("/delete/:id", (req, res) => {
+    Ingredient.findByIdAndDelete(ObjectId(req.params.id), (err) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.sendStatus(200);
+    });
+});
+
+app.use("/ingredient", ingredientRouter);
+
+const distributionPointRouter = express.Router();
+
+distributionPointRouter.get("/", (req, res) => {
+    DistributionPoint.find({}, (err, points) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(points);
+    });
+});
+
+distributionPointRouter.get("/:id", (req, res) => {
+    DistributionPoint.findOne({_id: ObjectId(req.params.id)}, (err, distributionPoint) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(distributionPoint);
+    });
+});
+
+distributionPointRouter.put("/edit", (req, res) => {
+    let distributionPoint = {
+        name: req.query.name,
+        address: req.query.address
+    };
+
+    DistributionPoint.findOneAndUpdate({_id: req.params.id}, distributionPoint, (err, newDistributionPoint) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(newDistributionPoint.id);
+    });
+});
+
+distributionPointRouter.post("/add", (req, res) => {
+    let distributionPoint = new DistributionPoint({
+        name: req.query.name,
+        address: req.query.address
+    });
+
+    distributionPoint.save((err, newDistributionPoint) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.send(newDistributionPoint.id);
+    });
+});
+
+distributionPointRouter.delete("/delete/:id", (req, res) => {
+    DistributionPoint.findByIdAndDelete(ObjectId(req.params.id), (err) => {
+        if (err) {
+            console.log(err);
+            return res.sendStatus(400);
+        }
+        res.sendStatus(200);
+    });
+});
+
+app.use("/distributionPoint", distributionPointRouter);
+
+/////////////////////////////////////////
+
+const userRouter = express.Router();
+
+app.get("/user/", (req, res) => {
+
+});
+
+app.get("/", (req, res) => {
+    res.send("<h2>Ну привет, пидарюга (:</h2>");
 });
 
 const orderedDishRouter = express.Router();
@@ -228,17 +349,3 @@ app.get("/card", (req, res) => {
         res.send(card);
     });
 });
-
-const distributionPointRouter = express.Router();
-
-app.get("/distributionPoint", (req, res) => {
-    DistributionPoint.find({}, (err, points) => {
-        if (err) {
-            console.log(err);
-            return res.sendStatus(400);
-        }
-        res.send(points);
-    });
-});
-
-app.listen(3001);
